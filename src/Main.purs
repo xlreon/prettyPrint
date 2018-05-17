@@ -29,10 +29,10 @@ instance printMap :: (Show k, Pretty v) => Pretty (Map k v) where
   printVal _ = "more than 1 nodes"
 
 showArray :: forall a b. Show a => Int -> a -> String
-showArray index value = show index <> "\n" <> " " <> show value <> "\n"
+showArray index value = show index <> "\n" <> show value <> "\n"
 
 showMapArray :: forall a b. Show a => a -> Pretty b => b -> String
-showMapArray key value = show key <> "\n" <> " " <> (printVal value) <> "\n"
+showMapArray key value = show key <> "\n" <> (printVal value) <> "\n"
 
 
 main :: forall e. Eff (console :: CONSOLE | e) Unit
