@@ -17,38 +17,22 @@ instance printInt :: Pretty Int where
 
 instance printString :: Pretty String where
   printVal :: String -> String
-  printVal val = show val
+  printVal val = show val  
 
-instance printArray :: Pretty (Array String) where
-  printVal :: Array String -> String
-  printVal arr = fromCharArray (mapWithIndex (\i n -> showArray i n) arr)
+instance printArray :: Show a => Pretty (Array a) where
+  printVal :: Array a -> String
+  printVal arr = fromCharArray (mapWithIndex (\i n -> (showArray i n)) arr)
 
-instance printMapInt :: Pretty (Map String (Array Int)) where
-  printVal :: (Map String (Array Int))-> String
-  printVal (Two left k v right) = showMapArrayInt v k
+instance printMap :: (Show k, Pretty v) => Pretty (Map k v) where
+  printVal :: (Map k v)-> String
+  printVal (Two left k v right) = showMapArray k v
   printVal _ = "more than 1 nodes"
 
-instance printMapString :: Pretty (Map String (Array String)) where
-  printVal :: (Map String (Array String)) -> String
-  printVal (Two left k v right) = showMapArrayString v k
-  printVal _ = "more than 1 node"
+showArray :: forall a b. Show a => Int -> a -> String
+showArray index value = show index <> "\n" <> " " <> show value <> "\n"
 
-instance printArrayIntMap :: Pretty (Array (Map String (Array Int))) where 
-  printVal :: (Array (Map String (Array Int))) -> String
-  printVal arr = fromCharArray (map (\n -> printVal n) arr)
-
-instance printArrayStringMap :: Pretty (Array (Map String (Array String))) where
-  printVal :: (Array (Map String (Array String))) -> String
-  printVal arr = fromCharArray (map (\n -> printVal n) arr) 
-
-showArray :: Int -> String -> String
-showArray index value = show index <> "\n" <> " " <> value <> "\n"
-
-showMapArrayInt :: Array Int -> String -> String
-showMapArrayInt value key = show key <> "\n" <> " " <> show value <> "\n"
-
-showMapArrayString :: Array String -> String -> String
-showMapArrayString value key = show key <> "\n" <> " " <> show value <> "\n"   
+showMapArray :: forall a b. Show a => a -> Pretty b => b -> String
+showMapArray key value = show key <> "\n" <> " " <> (printVal value) <> "\n"
 
 
 main :: forall e. Eff (console :: CONSOLE | e) Unit
@@ -60,6 +44,6 @@ main = do
   log "\nPretty Array\n"
   log (printVal ["hello","world"])
   log "\nPretty Map Array String\n"
-  log (printVal [singleton "a" ["x","Y","z"],singleton "b" ["m","n"]])
+  log (printVal (singleton "a" ["x","Y","z"]))
   log "\nPretty Map Array Integer\n"
-  log (printVal [singleton "a" [1,2,3],singleton "b" [8,9]])
+  log (printVal (singleton "a" [1,2,3]))
